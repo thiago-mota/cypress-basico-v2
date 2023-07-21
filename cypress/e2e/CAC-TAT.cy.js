@@ -305,7 +305,7 @@ describe('Central de Atendimento ao Cliente TAT', () => {
 		});
 	});
 
-	describe('Invocando atributos e métodos de elementos com .invoke e realizando requisições http', () => {
+	describe('Invocando atributos e métodos de elementos com .invoke', () => {
 		it('exibe e esconde as mensagens de sucesso e erro utilizando o invoke', () => {
 			cy.get('.success')
 				.should('not.be.visible')
@@ -323,13 +323,28 @@ describe('Central de Atendimento ao Cliente TAT', () => {
 				.should('not.be.visible')
 		});
 
-		it.only('preenche a área de texto utilizando o comando invoke', () => {
+		it('preenche a área de texto utilizando o comando invoke', () => {
 			cy.fillMandatoryFieldsMinusTextArea();
 			const sampleText = 'Sample text a ser inserido no text-area utilizando o .invoke';
 
   		cy.get('#open-text-area')
 				.invoke('val', sampleText)
 				.should('have.value', sampleText);
+		}); 
+	});
+
+	describe('Testando requisições HTTP', () => {
+		it('faz uma requisição HTTP e verifica status, statusText e body', () => {
+			cy.request({
+				method: 'GET',
+				url: 'https://cac-tat.s3.eu-central-1.amazonaws.com/index.html',
+			})
+				.should((response) => {
+					const { status, statusText, body } = response;
+					expect(status).to.equal(200);
+					expect(statusText).to.equal('OK');
+					expect(body).to.include('CAC TAT');
+				});
 		});
 	});
 });
