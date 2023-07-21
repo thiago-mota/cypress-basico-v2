@@ -279,27 +279,57 @@ describe('Central de Atendimento ao Cliente TAT', () => {
 		});
 	})
 
-	describe.only('Utilizando o lodash', () => {
+	describe('Utilizando o lodash', () => {
 		it('testa utilização do ._.repeat()', () => {
 			cy.fillMandatoryFieldsMinusTextArea();
-			const longText = Cypress._.repeat('xablau ', 20);
+			const longText = Cypress._.repeat('teste ', 10);
 
   		cy.get('#open-text-area')
-				.type(longText)
+				.invoke('val', longText)
 				.should('have.value', longText);
 		});
 
-		Cypress._.times(5, () => {
+		Cypress._.times(3, () => {
 			it('testa utilização do ._.times()', () => {
-				cy.title()
-				.should('be.equal', 'Central de Atendimento ao Cliente TAT');
+				cy.clock()
+				cy.fillMandatoryFieldsAndSubmit();
+		
+				cy.get('.success')
+					.should('be.visible');
+		
+				cy.tick(THREE_SECONDS_IN_MS)
+		
+				cy.get('.success > strong')
+					.should('not.be.visible');
 			});
 		});
 	});
 
 	describe('Invocando atributos e métodos de elementos com .invoke e realizando requisições http', () => {
-		it('', () => {
-	
+		it('exibe e esconde as mensagens de sucesso e erro utilizando o invoke', () => {
+			cy.get('.success')
+				.should('not.be.visible')
+				.invoke('show')
+				.should('be.visible')
+				.and('contain', 'Mensagem enviada com sucesso.')
+				.invoke('hide')
+				.should('not.be.visible')
+    	cy.get('.error')
+				.should('not.be.visible')
+				.invoke('show')
+				.should('be.visible')
+				.and('contain', 'Valide os campos obrigatórios!')
+				.invoke('hide')
+				.should('not.be.visible')
+		});
+
+		it.only('preenche a área de texto utilizando o comando invoke', () => {
+			cy.fillMandatoryFieldsMinusTextArea();
+			const sampleText = 'Sample text a ser inserido no text-area utilizando o .invoke';
+
+  		cy.get('#open-text-area')
+				.invoke('val', sampleText)
+				.should('have.value', sampleText);
 		});
 	});
 });
